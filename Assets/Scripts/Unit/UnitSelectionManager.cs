@@ -86,7 +86,8 @@ public class UnitSelectionManager : MonoBehaviour
     {
       // The clicked unit replaces all selected units
       // Note: Should this be a deselect all then select one instead?
-      SetSelectedUnits(new List<Unit> { clickedUnit });
+      DeselectAllUnits();
+      AddSelectedUnit(clickedUnit);
     }
   }
 
@@ -109,31 +110,32 @@ public class UnitSelectionManager : MonoBehaviour
 
   private void DeselectAllUnits()
   {
-    selectedUnits.Clear();
-    OnSelectionChange();
+    // Inform each unit of deselection first
+    foreach (Unit unit in selectedUnits)
+    {
+      unit.OnDeselect();
+    }
+
+    // Clear selected list
+    selectedUnits.Clear(); ;
   }
 
   private void DeselectUnit(Unit unit)
   {
+    // Inform unit of deselection
+    unit.OnDeselect();
+
+    // Remove from selected list
     selectedUnits.Remove(unit);
-    OnSelectionChange();
   }
 
   private void AddSelectedUnit(Unit unit)
   {
+    // Inform unit of selection
+    unit.OnSelect();
+
+    // Add to selected list
     selectedUnits.Add(unit);
-    OnSelectionChange();
-  }
-
-  private void SetSelectedUnits(List<Unit> units)
-  {
-    selectedUnits = units;
-    OnSelectionChange();
-  }
-
-  private void OnSelectionChange()
-  {
-    //Debug.Log($"{selectedUnits.Count} units selected");
   }
 
   private bool IsUnitSelected(Unit unit)

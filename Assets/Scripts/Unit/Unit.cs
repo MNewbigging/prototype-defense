@@ -6,6 +6,7 @@ using UnityEngine;
 public class Unit : MonoBehaviour
 {
   [SerializeField] private Animator unitAnimator;
+  [SerializeField] private MeshRenderer unitSelectedVisual;
   private Vector3 targetPosition;
   private float moveSpeed = 4f;
   private bool moving = false;
@@ -14,6 +15,9 @@ public class Unit : MonoBehaviour
   {
     // Default target position is position this unit starts in
     targetPosition = transform.position;
+
+    // Turn off select visual by default
+    unitSelectedVisual.enabled = false;
   }
 
   private void Update()
@@ -55,6 +59,16 @@ public class Unit : MonoBehaviour
     // No longer moving
     unitAnimator.SetBool("IsWalking", false);
     moving = false;
+  }
+
+  public void OnSelect()
+  {
+    unitSelectedVisual.enabled = true;
+  }
+
+  public void OnDeselect()
+  {
+    unitSelectedVisual.enabled = false;
   }
 
   public void MoveTo(Vector3 moveTarget)
