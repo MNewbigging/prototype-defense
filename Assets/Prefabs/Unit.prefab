@@ -46,6 +46,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e57014a6c6e8fb49ab7d706589d5307, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  unitAnimator: {fileID: 4159485746576268087}
 --- !u!65 &4420452274228589506
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -353,6 +354,12 @@ PrefabInstance:
 --- !u!4 &4106576750950578735 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4580766925885248, guid: 2f3e27eecb190e44a9af50723c394274,
+    type: 3}
+  m_PrefabInstance: {fileID: 4102000680844391791}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &4159485746576268087 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 95787105524477528, guid: 2f3e27eecb190e44a9af50723c394274,
     type: 3}
   m_PrefabInstance: {fileID: 4102000680844391791}
   m_PrefabAsset: {fileID: 0}

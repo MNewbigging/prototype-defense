@@ -2,33 +2,39 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-// Responsible for reacting to mouse input
+
 public class UnitController : MonoBehaviour
 {
+  [SerializeField] private LayerMask selectablesLayerMask;
 
+  private void Update()
+  {
+    // Listen for movement commands on a right click
+    if (Input.GetMouseButtonDown(1))
+    {
+      // Only bother if there are selected units to move
+      List<Unit> selectedUnits = UnitSelectionManager.Instance.GetSelectedUnits();
+      if (selectedUnits.Count == 0)
+      {
+        // Nothing selected to move; stop
+        return;
+      }
+
+      // Was right click location a valid move target?
+      Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+      bool didHit = Physics.Raycast(ray, out RaycastHit raycastHit, float.MaxValue, selectablesLayerMask);
+      if (!didHit || raycastHit.transform.GetComponent<Unit>() != null)
+      {
+        // Hit a unit; not a valid move target
+        return;
+      }
+
+      // Otherwise, hit a vaild move target -  issue move command to units
+      foreach (Unit unit in selectedUnits)
+      {
+        unit.MoveTo(raycastHit.point);
+      }
+    }
+  }
 }
 
-
-/*
-    Input behaviour:
-
-    - may want multiple units to be selected at once and give them commands
-    - units may have common and unique commands
-
-
-    Therefore, need a higher order class that:
-    - holds a reference to all selected units
-    - gathers minimum common actions available to all selected units
-
-    It, or something else, also needs to:
-    - manage the (de)selection of units; click, drag box, hotkey/cycle, bound group key
-
-
-    So, the high-level concepts are:
-
-    - Selection: whether a unit is selected or not, which units are selected
-
-    - Actions: behaviours resulting form user input that are undertaken by units
-    -- A unit needs a list of actions it can do: at any time, at the current time/state
-
-*/

@@ -11,9 +11,23 @@ using UnityEngine;
 */
 public class UnitSelectionManager : MonoBehaviour
 {
+  public static UnitSelectionManager Instance { get; private set; }
+
   [SerializeField] private LayerMask selectablesLayerMask;
 
   private List<Unit> selectedUnits = new List<Unit>();
+
+  private void Awake()
+  {
+    // Singleton setup
+    if (Instance != null)
+    {
+      Debug.LogError("Found more than one UnitSelectionManager " + transform);
+      Destroy(gameObject);
+      return;
+    }
+    Instance = this;
+  }
 
   private void Update()
   {
@@ -29,29 +43,50 @@ public class UnitSelectionManager : MonoBehaviour
         return;
       }
 
-      // If control was pressed while clicking
-      if (Input.GetKey(KeyCode.LeftControl))
+      // For now, just using single selection of units
+      SingleClickSelection(clickedUnit);
+    }
+  }
+
+  private void SingleClickSelection(Unit clickedUnit)
+  {
+    // Is this a new selection?
+    bool isUnitSelected = IsUnitSelected(clickedUnit);
+    if (isUnitSelected)
+    {
+      // Already selected; do nothing!
+      return;
+    }
+
+    // It's a newly clicked unit; select it
+    DeselectAllUnits();
+    AddSelectedUnit(clickedUnit);
+  }
+
+  private void ControlClickSelection(Unit clickedUnit)
+  {
+    // If control was pressed while clicking
+    if (Input.GetKey(KeyCode.LeftControl))
+    {
+      // Is this a new selection?
+      bool isUnitSelected = IsUnitSelected(clickedUnit);
+      if (isUnitSelected)
       {
-        // Is this a new selection?
-        bool isUnitSelected = IsUnitSelected(clickedUnit);
-        if (isUnitSelected)
-        {
-          // Selection is subtractive
-          DeselectUnit(clickedUnit);
-        }
-        else
-        {
-          // Selection is additive
-          AddSelectedUnit(clickedUnit);
-        }
-        // No control was pressed
+        // Selection is subtractive
+        DeselectUnit(clickedUnit);
       }
       else
       {
-        // The clicked unit replaces all selected units
-        // Note: Should this be a deselect all then select one instead?
-        SetSelectedUnits(new List<Unit> { clickedUnit });
+        // Selection is additive
+        AddSelectedUnit(clickedUnit);
       }
+      // No control was pressed
+    }
+    else
+    {
+      // The clicked unit replaces all selected units
+      // Note: Should this be a deselect all then select one instead?
+      SetSelectedUnits(new List<Unit> { clickedUnit });
     }
   }
 
@@ -98,12 +133,17 @@ public class UnitSelectionManager : MonoBehaviour
 
   private void OnSelectionChange()
   {
-    Debug.Log($"{selectedUnits.Count} units selected");
+    //Debug.Log($"{selectedUnits.Count} units selected");
   }
 
   private bool IsUnitSelected(Unit unit)
   {
     return selectedUnits.Contains(unit);
+  }
+
+  public List<Unit> GetSelectedUnits()
+  {
+    return selectedUnits;
   }
 }
 
