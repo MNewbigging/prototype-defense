@@ -2,6 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/* 
+  This class manages which units are currently selected.
+  
+  Selection controls:
+  - Select individual units with left mouse click
+  - Add/remove units to/from selection by holding left control key while clicking
+*/
 public class UnitSelectionManager : MonoBehaviour
 {
   [SerializeField] private LayerMask selectablesLayerMask;
