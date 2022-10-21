@@ -18,19 +18,31 @@ public class UnitSelectionManager : MonoBehaviour
       if (clickedUnit == null)
       {
         // No unit was clicked; should deselect all selected units then stop
-        DeselectUnits();
+        DeselectAllUnits();
         return;
       }
 
-      // If control was pressed
-      if (Input.GetKeyDown(KeyCode.LeftControl))
+      // If control was pressed while clicking
+      if (Input.GetKey(KeyCode.LeftControl))
       {
-        // Selection is additive
-        AddSelectedUnit(clickedUnit);
+        // Is this a new selection?
+        bool isUnitSelected = IsUnitSelected(clickedUnit);
+        if (isUnitSelected)
+        {
+          // Selection is subtractive
+          DeselectUnit(clickedUnit);
+        }
+        else
+        {
+          // Selection is additive
+          AddSelectedUnit(clickedUnit);
+        }
+        // No control was pressed
       }
       else
       {
         // The clicked unit replaces all selected units
+        // Note: Should this be a deselect all then select one instead?
         SetSelectedUnits(new List<Unit> { clickedUnit });
       }
     }
@@ -53,9 +65,15 @@ public class UnitSelectionManager : MonoBehaviour
     return null;
   }
 
-  private void DeselectUnits()
+  private void DeselectAllUnits()
   {
     selectedUnits.Clear();
+    OnSelectionChange();
+  }
+
+  private void DeselectUnit(Unit unit)
+  {
+    selectedUnits.Remove(unit);
     OnSelectionChange();
   }
 
@@ -74,6 +92,11 @@ public class UnitSelectionManager : MonoBehaviour
   private void OnSelectionChange()
   {
     Debug.Log($"{selectedUnits.Count} units selected");
+  }
+
+  private bool IsUnitSelected(Unit unit)
+  {
+    return selectedUnits.Contains(unit);
   }
 }
 

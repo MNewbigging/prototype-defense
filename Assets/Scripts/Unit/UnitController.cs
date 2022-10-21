@@ -26,8 +26,6 @@ public class UnitController : MonoBehaviour
 
     So, the high-level concepts are:
 
-    - Input: separate class(es) to listen for and respond to specific inputs
-
     - Selection: whether a unit is selected or not, which units are selected
 
     - Actions: behaviours resulting form user input that are undertaken by units
