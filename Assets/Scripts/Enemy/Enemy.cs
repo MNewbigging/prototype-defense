@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
-  private Vector3 startPosition = new Vector3(-12, 0, -4);
-  private Vector3 targetPosition = new Vector3(-12, 0, 4);
+  private Vector3 startPosition = new Vector3(-12, 0, -8);
+  private Vector3 targetPosition = new Vector3(-12, 0, 8);
 
   private void Update()
   {

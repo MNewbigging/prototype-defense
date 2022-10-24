@@ -76,4 +76,9 @@ public class Unit : MonoBehaviour
     targetPosition = moveTarget;
     moving = true;
   }
+
+  public void OnDetectEnemy(Transform enemy)
+  {
+    Debug.Log("Detected an enemey");
+  }
 }
