@@ -29,11 +29,14 @@ public class UnitController : MonoBehaviour
         return;
       }
 
-      // Otherwise, hit a vaild move target -  issue move command to units
+      // Otherwise, hit a vaild move target -  issue move command to selected units
       foreach (Unit unit in selectedUnits)
       {
         unit.MoveTo(raycastHit.point);
       }
+
+      // Show the movement indicator visual
+      MovementIndicator.Instance.AppearAt(raycastHit.point);
     }
   }
 }
