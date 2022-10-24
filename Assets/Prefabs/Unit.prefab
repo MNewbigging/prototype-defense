@@ -47,6 +47,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   unit: {fileID: 4423555912578333749}
+  unitAnimator: {fileID: 4159485746576268087}
 --- !u!54 &620703618
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -126,9 +127,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   unitAnimator: {fileID: 4159485746576268087}
   unitSelectedVisual: {fileID: 4089198582712813593}
-  enemiesLayer:
-    serializedVersion: 2
-    m_Bits: 0
 --- !u!65 &4420452274228589506
 BoxCollider:
   m_ObjectHideFlags: 0

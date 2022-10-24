@@ -5,20 +5,19 @@ using UnityEngine;
 public class EnemyDetector : MonoBehaviour
 {
   [SerializeField] private Unit unit;
+  [SerializeField] private Animator unitAnimator;
 
   private List<Transform> detectedEnemies = new List<Transform>();
   private Transform targetEnemy;
 
   private void OnTriggerEnter(Collider other)
   {
-    Debug.Log("Detected " + other);
     // Ensure this was a valid enemy
     bool isEnemy = other.transform.TryGetComponent<Enemy>(out Enemy enemy);
     if (!isEnemy)
     {
       return;
     }
-    Debug.Log("Valid enemy!");
 
     // Add to list of enemies in range
     detectedEnemies.Add(other.transform);
@@ -44,6 +43,7 @@ public class EnemyDetector : MonoBehaviour
     if (targetEnemy == other.transform)
     {
       targetEnemy = null;
+      unitAnimator.SetBool("IsFiring", false);
     }
   }
 
@@ -57,5 +57,8 @@ public class EnemyDetector : MonoBehaviour
 
     // Otherwise, turn to face target enemy
     unit.transform.LookAt(targetEnemy, Vector3.up);
+
+    // Fire at it!
+    unitAnimator.SetBool("IsFiring", true);
   }
 }
