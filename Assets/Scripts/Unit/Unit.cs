@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class Unit : MonoBehaviour
 {
+  public float rotateSpeed = 10f;
+
   [SerializeField] private Animator unitAnimator;
   [SerializeField] private MeshRenderer unitSelectedVisual;
   private Vector3 targetPosition;
@@ -47,7 +49,6 @@ public class Unit : MonoBehaviour
     transform.position += moveDirection * this.moveSpeed * Time.deltaTime;
 
     // Rotate to face target smoothly
-    float rotateSpeed = 10f;
     transform.forward = Vector3.Lerp(transform.forward, moveDirection, rotateSpeed * Time.deltaTime);
 
     // Play walking animation

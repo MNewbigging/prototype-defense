@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemyDetector : MonoBehaviour
+public class TargetClosestEnemy : MonoBehaviour
 {
   [SerializeField] private Unit unit;
   [SerializeField] private Animator unitAnimator;
@@ -55,8 +55,10 @@ public class EnemyDetector : MonoBehaviour
       return;
     }
 
-    // Otherwise, turn to face target enemy
-    unit.transform.LookAt(targetEnemy, Vector3.up);
+    // Rotate to face target
+    Vector3 lookDirection = (targetEnemy.position - unit.transform.position).normalized;
+    unit.transform.forward = Vector3.Lerp(transform.forward, lookDirection, unit.rotateSpeed * Time.deltaTime);
+
 
     // Fire at it!
     unitAnimator.SetBool("IsFiring", true);
