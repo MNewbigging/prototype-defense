@@ -1,12 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 /*
   Stores enemies in range, accessible via editor reference in Unit.
 */
 public class EnemyDetector : MonoBehaviour
 {
+  public event EventHandler<Transform> OnEnemyExitRange;
+
   private List<Transform> enemiesInRange = new List<Transform>();
 
   private void OnTriggerEnter(Collider other)
@@ -29,6 +32,7 @@ public class EnemyDetector : MonoBehaviour
     }
 
     enemiesInRange.Remove(other.transform);
+    OnEnemyExitRange(this, other.transform);
   }
 
   public bool EnemiesAreInRange()

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 
 public class Unit : MonoBehaviour
@@ -29,36 +30,15 @@ public class Unit : MonoBehaviour
 
     // Target closest enemy by default
     targetingBehaviour = GetComponent<TargetClosestEnemy>();
+
+    // Listen for when enemies leave range
+    enemyDetector.OnEnemyExitRange += EnemyDetector_OnEnemyExitRange;
   }
 
   private void Update()
   {
     HandleMovement();
-
-    // Check if we should be firing at enemies
-
-    // If currently targeting an enemy, shoot at it
-    if (targetEnemy)
-    {
-      // Face enemy
-      Vector3 lookDir = (targetEnemy.position - transform.position).normalized;
-      transform.forward = Vector3.Lerp(transform.forward, lookDir, rotateSpeed * Time.deltaTime);
-
-      // Shoot it
-      unitAnimator.SetBool("IsFiring", true);
-    }
-    else
-    {
-      // Otherwise, check if we should be targeting an enemy
-      if (!enemyDetector.EnemiesAreInRange())
-      {
-        // No enemies to target
-        return;
-      }
-
-      // Select a new target enemy according to current targeting behaviour
-      targetEnemy = targetingBehaviour.GetTargetEnemy(enemyDetector.GetEnemiesInRange());
-    }
+    HandleCombat();
   }
 
   private void HandleMovement()
@@ -102,6 +82,38 @@ public class Unit : MonoBehaviour
     // No longer moving
     unitAnimator.SetBool("IsWalking", false);
     moving = false;
+  }
+
+  private void HandleCombat()
+  {
+    // If there are no enemies in range, stop
+    if (!enemyDetector.EnemiesAreInRange())
+    {
+      return;
+    }
+
+    // If there is no current target enemy, find one from enemies in range
+    if (targetEnemy == null)
+    {
+      targetEnemy = targetingBehaviour.GetTargetEnemy(enemyDetector.GetEnemiesInRange());
+    }
+
+    // Face enemy
+    Vector3 lookDir = (targetEnemy.position - transform.position).normalized;
+    transform.forward = Vector3.Lerp(transform.forward, lookDir, rotateSpeed * Time.deltaTime);
+
+    // Shoot it
+    unitAnimator.SetBool("IsFiring", true);
+  }
+
+  private void EnemyDetector_OnEnemyExitRange(object sender, Transform enemy)
+  {
+    // If the enemy that left our range was being targeted, clear the target
+    if (targetEnemy == enemy)
+    {
+      targetEnemy = null;
+      unitAnimator.SetBool("IsFiring", false);
+    }
   }
 
   public void OnSelect()
