@@ -33,22 +33,7 @@ public class Unit : MonoBehaviour
 
   private void Update()
   {
-    // Check if we should be moving
-    if (moving)
-    {
-      // Has unit reached target yet?
-      float stoppingDistance = 0.05f;
-      if (Vector3.Distance(transform.position, targetMovePosition) > stoppingDistance)
-      {
-        // Not yet; continue moving
-        MoveToTarget();
-      }
-      else
-      {
-        // Within acceptable stopping distance of target; stop moving now
-        ReachedTarget();
-      }
-    }
+    HandleMovement();
 
     // Check if we should be firing at enemies
 
@@ -76,14 +61,37 @@ public class Unit : MonoBehaviour
     }
   }
 
+  private void HandleMovement()
+  {
+    // Check if we should be moving
+    if (moving)
+    {
+      // Has unit reached target yet?
+      float stoppingDistance = 0.05f;
+      if (Vector3.Distance(transform.position, targetMovePosition) > stoppingDistance)
+      {
+        // Not yet; continue moving
+        MoveToTarget();
+      }
+      else
+      {
+        // Within acceptable stopping distance of target; stop moving now
+        ReachedTarget();
+      }
+    }
+  }
+
   private void MoveToTarget()
   {
     // Move towards target
     Vector3 moveDirection = (targetMovePosition - transform.position).normalized;
     transform.position += moveDirection * this.moveSpeed * Time.deltaTime;
 
-    // Rotate to face target smoothly
-    transform.forward = Vector3.Lerp(transform.forward, moveDirection, rotateSpeed * Time.deltaTime);
+    // Rotate to face target smoothly - so long as there isn't an enemy to face
+    if (targetEnemy == null)
+    {
+      transform.forward = Vector3.Lerp(transform.forward, moveDirection, rotateSpeed * Time.deltaTime);
+    }
 
     // Play walking animation
     unitAnimator.SetBool("IsWalking", true);
