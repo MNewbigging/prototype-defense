@@ -6,7 +6,10 @@ using System;
 
 public class Unit : MonoBehaviour
 {
-  [SerializeField] private Animator unitAnimator;
+  public event EventHandler OnStartMoving;
+  public event EventHandler OnStopMoving;
+  public event EventHandler<Transform> OnShoot;
+
   [SerializeField] private MeshRenderer unitSelectedVisual;
 
   // Movement
@@ -72,16 +75,12 @@ public class Unit : MonoBehaviour
     {
       transform.forward = Vector3.Lerp(transform.forward, moveDirection, rotateSpeed * Time.deltaTime);
     }
-
-    // Play walking animation
-    unitAnimator.SetBool("IsWalking", true);
   }
 
   private void ReachedTarget()
   {
-    // No longer moving
-    unitAnimator.SetBool("IsWalking", false);
     moving = false;
+    OnStopMoving?.Invoke(this, EventArgs.Empty);
   }
 
   private void HandleCombat()
@@ -102,8 +101,9 @@ public class Unit : MonoBehaviour
     Vector3 lookDir = (targetEnemy.position - transform.position).normalized;
     transform.forward = Vector3.Lerp(transform.forward, lookDir, rotateSpeed * Time.deltaTime);
 
-    // Shoot it
-    unitAnimator.SetBool("IsFiring", true);
+    // Shoot it 
+    // TODO - need to implement a Gun class with rate of fire so this doesn't get called every frame
+    OnShoot(this, targetEnemy);
   }
 
   private void EnemyDetector_OnEnemyExitRange(object sender, Transform enemy)
@@ -112,7 +112,6 @@ public class Unit : MonoBehaviour
     if (targetEnemy == enemy)
     {
       targetEnemy = null;
-      unitAnimator.SetBool("IsFiring", false);
     }
   }
 
@@ -128,12 +127,9 @@ public class Unit : MonoBehaviour
 
   public void MoveTo(Vector3 moveTarget)
   {
+    // Start moving
     targetMovePosition = moveTarget;
     moving = true;
-  }
-
-  public void OnDetectEnemy(Transform enemy)
-  {
-    Debug.Log("Detected an enemey");
+    OnStartMoving?.Invoke(this, EventArgs.Empty);
   }
 }
