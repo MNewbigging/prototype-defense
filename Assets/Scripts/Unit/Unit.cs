@@ -5,21 +5,30 @@ using UnityEngine;
 
 public class Unit : MonoBehaviour
 {
-  public float rotateSpeed = 10f;
-
   [SerializeField] private Animator unitAnimator;
   [SerializeField] private MeshRenderer unitSelectedVisual;
-  private Vector3 targetPosition;
+
+  // Movement
+  private Vector3 targetMovePosition;
   private float moveSpeed = 4f;
   private bool moving = false;
+  private float rotateSpeed = 10f;
+
+  // Enemy
+  [SerializeField] private EnemyDetector enemyDetector;
+  private TargetingBehaviour targetingBehaviour;
+  private Transform targetEnemy;
 
   private void Awake()
   {
-    // Default target position is position this unit starts in
-    targetPosition = transform.position;
+    // Default target move position is position this unit starts in
+    targetMovePosition = transform.position;
 
-    // Turn off select visual by default
+    // Turn off selected visual by default
     unitSelectedVisual.enabled = false;
+
+    // Target closest enemy by default
+    targetingBehaviour = GetComponent<TargetClosestEnemy>();
   }
 
   private void Update()
@@ -29,7 +38,7 @@ public class Unit : MonoBehaviour
     {
       // Has unit reached target yet?
       float stoppingDistance = 0.05f;
-      if (Vector3.Distance(transform.position, targetPosition) > stoppingDistance)
+      if (Vector3.Distance(transform.position, targetMovePosition) > stoppingDistance)
       {
         // Not yet; continue moving
         MoveToTarget();
@@ -40,12 +49,37 @@ public class Unit : MonoBehaviour
         ReachedTarget();
       }
     }
+
+    // Check if we should be firing at enemies
+
+    // If currently targeting an enemy, shoot at it
+    if (targetEnemy)
+    {
+      // Face enemy
+      Vector3 lookDir = (targetEnemy.position - transform.position).normalized;
+      transform.forward = Vector3.Lerp(transform.forward, lookDir, rotateSpeed * Time.deltaTime);
+
+      // Shoot it
+      unitAnimator.SetBool("IsFiring", true);
+    }
+    else
+    {
+      // Otherwise, check if we should be targeting an enemy
+      if (!enemyDetector.EnemiesAreInRange())
+      {
+        // No enemies to target
+        return;
+      }
+
+      // Select a new target enemy according to current targeting behaviour
+      targetEnemy = targetingBehaviour.GetTargetEnemy(enemyDetector.GetEnemiesInRange());
+    }
   }
 
   private void MoveToTarget()
   {
     // Move towards target
-    Vector3 moveDirection = (targetPosition - transform.position).normalized;
+    Vector3 moveDirection = (targetMovePosition - transform.position).normalized;
     transform.position += moveDirection * this.moveSpeed * Time.deltaTime;
 
     // Rotate to face target smoothly
@@ -74,7 +108,7 @@ public class Unit : MonoBehaviour
 
   public void MoveTo(Vector3 moveTarget)
   {
-    targetPosition = moveTarget;
+    targetMovePosition = moveTarget;
     moving = true;
   }
 
