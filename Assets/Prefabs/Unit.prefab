@@ -194,7 +194,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 441b8c52fec0ea74c812ef1cb5898c9f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  bulletProjectilePrefab: {fileID: 1626713527905098884, guid: a9eebd82ef624d24787a75766e53b082,
+    type: 3}
+  shootPointTransform: {fileID: 6754244180206664095}
   rpm: 240
+  magSize: 10
 --- !u!1 &4811321046618958124
 GameObject:
   m_ObjectHideFlags: 0

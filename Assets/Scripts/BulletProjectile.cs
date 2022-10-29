@@ -32,7 +32,6 @@ public class BulletProjectile : MonoBehaviour
       trailRenderer.transform.parent = null;
 
       Destroy(gameObject);
-
     }
   }
 }

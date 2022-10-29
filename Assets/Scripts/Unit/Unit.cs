@@ -8,7 +8,6 @@ public class Unit : MonoBehaviour
 {
   public event EventHandler OnStartMoving;
   public event EventHandler OnStopMoving;
-  public event EventHandler<Transform> OnShoot;
 
   [SerializeField] private MeshRenderer unitSelectedVisual;
 
@@ -109,11 +108,7 @@ public class Unit : MonoBehaviour
 
     // Shoot it 
     // TODO - only shoot when actually facing the enemy
-    if (gun.TryShoot())
-    {
-      OnShoot(this, targetEnemy);
-      Debug.Log("shoot");
-    }
+    gun.FireAt(targetEnemy.transform);
   }
 
   private void EnemyDetector_OnEnemyExitRange(object sender, Transform enemy)

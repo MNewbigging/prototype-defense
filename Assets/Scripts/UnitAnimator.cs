@@ -6,8 +6,6 @@ using System;
 public class UnitAnimator : MonoBehaviour
 {
   [SerializeField] private Animator animator;
-  [SerializeField] private Transform bulletProjectilePrefab;
-  [SerializeField] private Transform shootPointTransform;
 
   private void Awake()
   {
@@ -15,7 +13,12 @@ public class UnitAnimator : MonoBehaviour
     {
       unit.OnStartMoving += Unit_OnStartMoving;
       unit.OnStopMoving += Unit_OnStopMoving;
-      unit.OnShoot += Unit_OnShoot;
+    }
+
+    if (TryGetComponent<Gun>(out Gun gun))
+    {
+      gun.OnShoot += Gun_OnShoot;
+      gun.OnReload += Gun_OnReload;
     }
   }
 
@@ -29,18 +32,14 @@ public class UnitAnimator : MonoBehaviour
     animator.SetBool("IsWalking", false);
   }
 
-  private void Unit_OnShoot(object sender, Transform enemy)
+  private void Gun_OnReload(object sender, EventArgs e)
+  {
+    animator.SetTrigger("Reload");
+    Debug.Log("Playing reload anim");
+  }
+
+  private void Gun_OnShoot(object sender, EventArgs e)
   {
     animator.SetTrigger("Shoot");
-
-    // Create the bullet, get its script and set its target position
-    Transform bulletTransform = Instantiate(bulletProjectilePrefab, shootPointTransform.position, Quaternion.identity);
-    BulletProjectile bulletProjectile = bulletTransform.GetComponent<BulletProjectile>();
-
-    // Keep bullet target level with origin for now - can introduce spread later
-    Vector3 targetPosition = enemy.transform.position;
-    targetPosition.y = shootPointTransform.position.y;
-
-    bulletProjectile.SetTarget(targetPosition);
   }
 }
