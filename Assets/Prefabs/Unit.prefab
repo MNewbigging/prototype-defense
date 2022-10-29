@@ -194,7 +194,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 441b8c52fec0ea74c812ef1cb5898c9f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rpm: 120
+  rpm: 240
 --- !u!1 &4811321046618958124
 GameObject:
   m_ObjectHideFlags: 0
