@@ -1261,6 +1261,16 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6470836329921354422, guid: e4ab65bce8e09b04a946a343268eff53,
+        type: 3}
+      propertyPath: rpm
+      value: 120
+      objectReference: {fileID: 0}
+    - target: {fileID: 6470836329921354422, guid: e4ab65bce8e09b04a946a343268eff53,
+        type: 3}
+      propertyPath: magSize
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 8720753638880970500, guid: e4ab65bce8e09b04a946a343268eff53,
         type: 3}
       propertyPath: bulletProjectilePrefab
