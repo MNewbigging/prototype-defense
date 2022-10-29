@@ -23,6 +23,9 @@ public class Unit : MonoBehaviour
   private TargetingBehaviour targetingBehaviour;
   private Transform targetEnemy;
 
+  // Weapon
+  private Gun gun;
+
   private void Awake()
   {
     // Default target move position is position this unit starts in
@@ -36,6 +39,9 @@ public class Unit : MonoBehaviour
 
     // Listen for when enemies leave range
     enemyDetector.OnEnemyExitRange += EnemyDetector_OnEnemyExitRange;
+
+    // Get the attached gun
+    gun = GetComponent<Gun>();
   }
 
   private void Update()
@@ -102,8 +108,12 @@ public class Unit : MonoBehaviour
     transform.forward = Vector3.Lerp(transform.forward, lookDir, rotateSpeed * Time.deltaTime);
 
     // Shoot it 
-    // TODO - need to implement a Gun class with rate of fire so this doesn't get called every frame
-    OnShoot(this, targetEnemy);
+    // TODO - only shoot when actually facing the enemy
+    if (gun.TryShoot())
+    {
+      OnShoot(this, targetEnemy);
+      Debug.Log("shoot");
+    }
   }
 
   private void EnemyDetector_OnEnemyExitRange(object sender, Transform enemy)
