@@ -75,6 +75,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 541041db7597e8b489035c2d5b3007b0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  attachedUnit: {fileID: 4423555912578333749}
 --- !u!1 &4102000681070599322
 GameObject:
   m_ObjectHideFlags: 0
@@ -128,6 +129,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   unitSelectedVisual: {fileID: 4089198582712813593}
+  team: 1
   enemyDetector: {fileID: 1147786815710906421}
 --- !u!65 &4420452274228589506
 BoxCollider:
@@ -179,9 +181,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animator: {fileID: 4159485746576268087}
-  bulletProjectilePrefab: {fileID: 1626713527905098884, guid: a9eebd82ef624d24787a75766e53b082,
-    type: 3}
-  shootPointTransform: {fileID: 6754244180206664095}
 --- !u!114 &6470836329921354422
 MonoBehaviour:
   m_ObjectHideFlags: 0
