@@ -4,6 +4,8 @@ using UnityEngine;
 
 /* 
   This class manages which units are currently selected.
+
+  Currently only allows one unit to be selected at a time.
   
   Selection controls:
   - Select individual units with left mouse click
@@ -14,6 +16,7 @@ public class UnitSelectionManager : MonoBehaviour
   public static UnitSelectionManager Instance { get; private set; }
 
   [SerializeField] private LayerMask selectablesLayerMask;
+  [SerializeField] private int playerTeam = 1;
 
   private List<Unit> selectedUnits = new List<Unit>();
 
@@ -36,9 +39,10 @@ public class UnitSelectionManager : MonoBehaviour
     {
       // Was a unit clicked?
       Unit clickedUnit = GetClickedUnit();
-      if (clickedUnit == null)
+
+      // If not unit, or a unit from outside player's team, was clicked
+      if (clickedUnit == null || clickedUnit.GetTeam() != playerTeam)
       {
-        // No unit was clicked; should deselect all selected units then stop
         DeselectAllUnits();
         return;
       }

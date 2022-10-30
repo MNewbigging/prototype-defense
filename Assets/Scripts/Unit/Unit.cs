@@ -6,10 +6,13 @@ using System;
 
 public class Unit : MonoBehaviour
 {
+  // Unit action events
   public event EventHandler OnStartMoving;
   public event EventHandler OnStopMoving;
 
+  // General
   [SerializeField] private MeshRenderer unitSelectedVisual;
+  [SerializeField] private int team = 1;
 
   // Movement
   private Vector3 targetMovePosition;
@@ -118,6 +121,16 @@ public class Unit : MonoBehaviour
     {
       targetEnemy = null;
     }
+  }
+
+  public int GetTeam()
+  {
+    return team;
+  }
+
+  public void SetTeam(int team)
+  {
+    this.team = team;
   }
 
   public void OnSelect()

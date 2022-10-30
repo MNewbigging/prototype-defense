@@ -26,6 +26,7 @@ public class UnitController : MonoBehaviour
       if (!didHit || raycastHit.transform.GetComponent<Unit>() != null)
       {
         // Hit a unit; not a valid move target
+        // TODO - if right-clicked on an enemy unit, move to attack it
         return;
       }
 
