@@ -35,7 +35,6 @@ public class UnitAnimator : MonoBehaviour
   private void Gun_OnReload(object sender, EventArgs e)
   {
     animator.SetTrigger("Reload");
-    Debug.Log("Playing reload anim");
   }
 
   private void Gun_OnShoot(object sender, EventArgs e)

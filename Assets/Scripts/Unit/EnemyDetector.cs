@@ -19,7 +19,6 @@ public class EnemyDetector : MonoBehaviour
     // Ensure this was a unit
     if (!other.transform.TryGetComponent<Unit>(out Unit unit))
     {
-      Debug.Log("not a unit");
       return;
     }
 
