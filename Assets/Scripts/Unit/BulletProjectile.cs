@@ -8,33 +8,54 @@ public class BulletProjectile : MonoBehaviour
   [SerializeField] private Transform bulletHitVfxPrefab;
 
   private Vector3 targetPosition;
+  private Vector3 targetDirection;
+
+  private Vector3 lastPosition;
 
   public void SetTarget(Vector3 targetPosition)
   {
     this.targetPosition = targetPosition;
   }
 
-  private void Update()
+  public void SetTargetDirection(Vector3 targetDirection)
   {
-    Vector3 moveDir = (targetPosition - transform.position).normalized;
+    // So the bullet knows which direction to travel in
+    this.targetDirection = targetDirection;
 
-    float distanceBeforeMoving = Vector3.Distance(transform.position, targetPosition);
+    // Set last position to the current position at start of flight
+    lastPosition = transform.position;
+  }
 
+  private void FixedUpdate()
+  {
+    // Move in target direction
     float moveSpeed = 200f;
-    transform.position += moveDir * moveSpeed * Time.deltaTime;
+    transform.position += targetDirection * moveSpeed * Time.deltaTime;
 
-    float distanceAfterMoving = Vector3.Distance(transform.position, targetPosition);
-
-    // Test if overshot target
-    if (distanceBeforeMoving < distanceAfterMoving)
+    // Raycast from last position to current position to see if anything was hit
+    float distanceTravelled = Vector3.Distance(transform.position, lastPosition);
+    if (Physics.Raycast(lastPosition, targetDirection, out RaycastHit raycastHit, distanceTravelled))
     {
-      transform.position = targetPosition;
+      // Hit something - move to place hit
+      transform.position = raycastHit.point;
 
+      // If it was a unit, should damage it
+      if (raycastHit.transform.TryGetComponent<Unit>(out Unit unit))
+      {
+        Debug.Log("Hit unit");
+      }
+
+      // Unparent trail renderer so it fades away and destroys itself when done
       trailRenderer.transform.parent = null;
 
-      Destroy(gameObject);
+      // Create the bullet hit vfx
+      Instantiate(bulletHitVfxPrefab, transform.position, Quaternion.identity);
 
-      Instantiate(bulletHitVfxPrefab, targetPosition, Quaternion.identity);
+      // Destroy the bullet
+      Destroy(gameObject);
     }
+
+    // This is now the last position for next tick
+    lastPosition = transform.position;
   }
 }

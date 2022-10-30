@@ -61,14 +61,17 @@ public class Gun : MonoBehaviour
 
   private void FireBullet(Transform target)
   {
+    // Create the bullet, get its script 
+    Transform bulletTransform = Instantiate(bulletProjectilePrefab, shootPointTransform.position, Quaternion.identity);
+    BulletProjectile bulletProjectile = bulletTransform.GetComponent<BulletProjectile>();
+
     // Keep bullet target level with origin for now - can introduce spread later
     Vector3 targetPosition = target.position;
     targetPosition.y = shootPointTransform.position.y;
 
-    // Create the bullet, get its script to set its target
-    Transform bulletTransform = Instantiate(bulletProjectilePrefab, shootPointTransform.position, Quaternion.identity);
-    BulletProjectile bulletProjectile = bulletTransform.GetComponent<BulletProjectile>();
-    bulletProjectile.SetTarget(targetPosition);
+    // Tell the bullet which direction to move in; towards the target
+    Vector3 targetDirection = (targetPosition - shootPointTransform.position).normalized;
+    bulletProjectile.SetTargetDirection(targetDirection);
 
     // One less bullet in the mag
     bulletsInMag--;
