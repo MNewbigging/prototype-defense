@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 620703618}
   - component: {fileID: 620703617}
   - component: {fileID: 1147786815710906421}
-  m_Layer: 7
+  m_Layer: 6
   m_Name: EnemyDetector
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -196,8 +196,8 @@ MonoBehaviour:
   bulletProjectilePrefab: {fileID: 1626713527905098884, guid: a9eebd82ef624d24787a75766e53b082,
     type: 3}
   shootPointTransform: {fileID: 6754244180206664095}
-  rpm: 240
-  magSize: 10
+  rpm: 120
+  magSize: 4
 --- !u!1 &4811321046618958124
 GameObject:
   m_ObjectHideFlags: 0
