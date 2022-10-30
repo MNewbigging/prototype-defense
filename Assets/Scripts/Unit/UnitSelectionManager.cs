@@ -43,7 +43,6 @@ public class UnitSelectionManager : MonoBehaviour
       // If not unit, or a unit from outside player's team, was clicked
       if (clickedUnit == null || clickedUnit.GetTeam() != playerTeam)
       {
-        Debug.Log("cannot select " + clickedUnit);
         DeselectAllUnits();
         return;
       }
