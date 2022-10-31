@@ -5,7 +5,7 @@ using System;
 
 public class HealthSystem : MonoBehaviour
 {
-  public event EventHandler OnDie;
+  public event EventHandler<Transform> OnDie;
 
   [SerializeField] private int health = 100;
 
@@ -17,7 +17,7 @@ public class HealthSystem : MonoBehaviour
     {
       health = 0;
 
-      OnDie?.Invoke(this, EventArgs.Empty);
+      OnDie?.Invoke(this, transform);
     }
   }
 }

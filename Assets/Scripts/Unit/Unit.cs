@@ -22,9 +22,9 @@ public class Unit : MonoBehaviour
   private float rotateSpeed = 10f;
 
   // Enemy
-  [SerializeField] private EnemyDetector enemyDetector;
   private TargetingBehaviour targetingBehaviour;
   private Transform targetEnemy;
+  private float detectionRange = 5f;
 
   // Weapon
   private Gun gun;
@@ -40,20 +40,11 @@ public class Unit : MonoBehaviour
     // Target closest enemy by default
     targetingBehaviour = GetComponent<TargetClosestEnemy>();
 
-
-
-    // Get the attached gun and tell it which team this unit is on
+    // Get the attached gun
     gun = GetComponent<Gun>();
-    gun.SetTeam(this.team);
 
     // Get attached health system
     healthSystem = GetComponent<HealthSystem>();
-  }
-
-  private void Start()
-  {
-    enemyDetector.OnEnemyExitRange += EnemyDetector_OnEnemyExitRange;
-    healthSystem.OnDie += HealthSystem_OnDie;
   }
 
   private void Update()
@@ -103,16 +94,23 @@ public class Unit : MonoBehaviour
 
   private void HandleCombat()
   {
-    // If there are no enemies in range, stop
-    if (!enemyDetector.EnemiesAreInRange())
-    {
-      return;
-    }
-
-    // If there is no current target enemy, find one from enemies in range
+    // If there is no current target enemy,
     if (targetEnemy == null)
     {
-      targetEnemy = targetingBehaviour.GetTargetEnemy(enemyDetector.GetEnemiesInRange());
+      // Get all enemies in range 
+      List<Transform> enemiesInRange = GetEnemiesInRange();
+
+      // If no enemies, nothing to do!
+      if (enemiesInRange.Count == 0)
+      {
+        return;
+      }
+
+      // Find one from enemies in range, according to current targeting behaviour
+      targetEnemy = targetingBehaviour.GetTargetEnemy(enemiesInRange);
+
+      // Listen for when that enemy dies
+      targetEnemy.GetComponent<HealthSystem>().OnDie += EnemyHealthSystem_OnDie;
     }
 
     // Face enemy
@@ -124,18 +122,53 @@ public class Unit : MonoBehaviour
     gun.FireAt(targetEnemy.transform);
   }
 
-  private void EnemyDetector_OnEnemyExitRange(object sender, Transform enemy)
+  private List<Transform> GetEnemiesInRange()
   {
-    // If the enemy that left our range was being targeted, clear the target
+    // Spherecast to detect any enemies in range
+    RaycastHit[] hits = Physics.SphereCastAll(transform.position, detectionRange, transform.forward, detectionRange);
+
+    List<Transform> enemies = new List<Transform>();
+
+    foreach (RaycastHit hit in hits)
+    {
+      // Ensure this was a unit
+      if (!hit.transform.TryGetComponent<Unit>(out Unit hitUnit))
+      {
+        continue;
+      }
+
+      // Ensure this was a different unit than the one doing the detecting
+      if (this == hitUnit)
+      {
+        continue;
+      }
+
+      // Also ensure this unit is an enemy
+      if (LevelUnitManager.Instance.UnitsAreEnemies(this, hitUnit))
+      {
+        // Can add it to list of potential enemies
+        enemies.Add(hitUnit.transform);
+      }
+    }
+
+    return enemies;
+  }
+
+  private void EnemyHealthSystem_OnDie(object sender, Transform enemy)
+  {
+    RemoveTargetEnemy(enemy);
+  }
+
+  private void RemoveTargetEnemy(Transform enemy)
+  {
+    // If that is our target, can remove this enemy as a target
     if (targetEnemy == enemy)
     {
       targetEnemy = null;
     }
-  }
 
-  private void HealthSystem_OnDie(object sender, EventArgs e)
-  {
-    //
+    // Stop listening to that event now
+    enemy.GetComponent<HealthSystem>().OnDie -= EnemyHealthSystem_OnDie;
   }
 
   public int GetTeam()

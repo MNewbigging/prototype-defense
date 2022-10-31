@@ -25,4 +25,9 @@ public class LevelUnitManager : MonoBehaviour
   {
     return fromTeam == toTeam;
   }
+
+  public bool UnitsAreEnemies(Unit first, Unit second)
+  {
+    return first.GetTeam() != second.GetTeam();
+  }
 }

@@ -11,48 +11,41 @@ public class EnemyDetector : MonoBehaviour
   public event EventHandler<Transform> OnEnemyExitRange;
 
   [SerializeField] private Unit attachedUnit;
+  [SerializeField] private float detectionRange = 2f;
   private List<Transform> enemiesInRange = new List<Transform>();
 
 
-  private void OnTriggerEnter(Collider other)
-  {
-    // Ensure this was a unit
-    if (!other.transform.TryGetComponent<Unit>(out Unit unit))
-    {
-      return;
-    }
 
-    // An enemy unit is one not on this unit's team
-    if (unit.GetTeam() == attachedUnit.GetTeam())
-    {
-      return;
-    }
-
-    // Found a unit on another team - it's an enemy!
-    enemiesInRange.Add(other.transform);
-  }
-
-  private void OnTriggerExit(Collider other)
-  {
-    // If other was in the list of in-range enemies
-    if (enemiesInRange.Contains(other.transform))
-    {
-      // It has just left this unit's range, so remove it from the list
-      enemiesInRange.Remove(other.transform);
-
-      // And notify
-      OnEnemyExitRange(this, other.transform);
-    }
-  }
-
-
-  public bool EnemiesAreInRange()
-  {
-    return enemiesInRange.Count > 0;
-  }
 
   public List<Transform> GetEnemiesInRange()
   {
-    return enemiesInRange;
+    // Spherecast to detect any enemies in range
+    RaycastHit[] hits = Physics.SphereCastAll(transform.position, detectionRange, transform.forward, detectionRange);
+
+    List<Transform> enemies = new List<Transform>();
+
+    foreach (RaycastHit hit in hits)
+    {
+      // Ensure this was a unit
+      if (!hit.transform.TryGetComponent<Unit>(out Unit hitUnit))
+      {
+        continue;
+      }
+
+      // Ensure this was a different unit than the one doing the detecting
+      if (hitUnit == attachedUnit)
+      {
+        continue;
+      }
+
+      // Also ensure this unit is an enemy
+      if (LevelUnitManager.Instance.UnitsAreEnemies(hitUnit, attachedUnit))
+      {
+        // Can add it to list of potential enemies
+        enemies.Add(hitUnit.transform);
+      }
+    }
+
+    return enemies;
   }
 }

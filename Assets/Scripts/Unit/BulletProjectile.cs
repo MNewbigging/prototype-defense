@@ -10,12 +10,13 @@ public class BulletProjectile : MonoBehaviour
   private Vector3 targetDirection;
   private Vector3 lastPosition;
 
-  private int team;
+  // Ref to the unit that fired the gun which created this bullet
+  private Unit firingUnit;
   private int bulletDamage;
 
-  public void Setup(int team, int bulletDamage, Vector3 targetDirection)
+  public void Setup(Unit unit, int bulletDamage, Vector3 targetDirection)
   {
-    this.team = team;
+    this.firingUnit = unit;
     this.bulletDamage = bulletDamage;
     this.targetDirection = targetDirection;
 
@@ -40,7 +41,7 @@ public class BulletProjectile : MonoBehaviour
       if (raycastHit.transform.TryGetComponent<Unit>(out Unit unit))
       {
         // Check with level unit manager if this was friendly fire or not
-        if (!LevelUnitManager.Instance.WasFriendlyFire(team, unit.GetTeam()))
+        if (!LevelUnitManager.Instance.WasFriendlyFire(firingUnit.GetTeam(), unit.GetTeam()))
         {
           // Should damage other unit
           unit.TakeDamage(bulletDamage);

@@ -8,6 +8,7 @@ public class Gun : MonoBehaviour
   public event EventHandler OnShoot;
   public event EventHandler OnReload;
 
+  [SerializeField] private Unit unit;
   [SerializeField] private Transform bulletProjectilePrefab;
   [SerializeField] private Transform shootPointTransform;
 
@@ -20,8 +21,6 @@ public class Gun : MonoBehaviour
   private int bulletsInMag;
   private bool reloading = false;
 
-  private int team;
-
   private void Awake()
   {
     // Work out rounds per second
@@ -29,11 +28,6 @@ public class Gun : MonoBehaviour
 
     // Starts fully loaded
     bulletsInMag = this.magSize;
-  }
-
-  public void SetTeam(int team)
-  {
-    this.team = team;
   }
 
   public void FireAt(Transform enemyTransform)
@@ -77,7 +71,7 @@ public class Gun : MonoBehaviour
     Vector3 targetDirection = (targetPosition - shootPointTransform.position).normalized;
 
     // Inform bullet which team this gun fires for, its damage and direction
-    bulletProjectile.Setup(team, bulletDamage, targetDirection);
+    bulletProjectile.Setup(unit, bulletDamage, targetDirection);
 
     // One less bullet in the mag
     bulletsInMag--;
