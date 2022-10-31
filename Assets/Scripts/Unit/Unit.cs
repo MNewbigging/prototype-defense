@@ -13,6 +13,7 @@ public class Unit : MonoBehaviour
   // General
   [SerializeField] private MeshRenderer unitSelectedVisual;
   [SerializeField] private int team = 1;
+  private HealthSystem healthSystem;
 
   // Movement
   private Vector3 targetMovePosition;
@@ -39,11 +40,20 @@ public class Unit : MonoBehaviour
     // Target closest enemy by default
     targetingBehaviour = GetComponent<TargetClosestEnemy>();
 
-    // Listen for when enemies leave range
-    enemyDetector.OnEnemyExitRange += EnemyDetector_OnEnemyExitRange;
 
-    // Get the attached gun
+
+    // Get the attached gun and tell it which team this unit is on
     gun = GetComponent<Gun>();
+    gun.SetTeam(this.team);
+
+    // Get attached health system
+    healthSystem = GetComponent<HealthSystem>();
+  }
+
+  private void Start()
+  {
+    enemyDetector.OnEnemyExitRange += EnemyDetector_OnEnemyExitRange;
+    healthSystem.OnDie += HealthSystem_OnDie;
   }
 
   private void Update()
@@ -123,6 +133,11 @@ public class Unit : MonoBehaviour
     }
   }
 
+  private void HealthSystem_OnDie(object sender, EventArgs e)
+  {
+    //
+  }
+
   public int GetTeam()
   {
     return team;
@@ -150,4 +165,6 @@ public class Unit : MonoBehaviour
     moving = true;
     OnStartMoving?.Invoke(this, EventArgs.Empty);
   }
+
+  public void TakeDamage(int damageAmount) => healthSystem.TakeDamage(damageAmount);
 }

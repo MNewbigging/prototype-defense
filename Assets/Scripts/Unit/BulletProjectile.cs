@@ -7,19 +7,16 @@ public class BulletProjectile : MonoBehaviour
   [SerializeField] private TrailRenderer trailRenderer;
   [SerializeField] private Transform bulletHitVfxPrefab;
 
-  private Vector3 targetPosition;
   private Vector3 targetDirection;
-
   private Vector3 lastPosition;
 
-  public void SetTarget(Vector3 targetPosition)
-  {
-    this.targetPosition = targetPosition;
-  }
+  private int team;
+  private int bulletDamage;
 
-  public void SetTargetDirection(Vector3 targetDirection)
+  public void Setup(int team, int bulletDamage, Vector3 targetDirection)
   {
-    // So the bullet knows which direction to travel in
+    this.team = team;
+    this.bulletDamage = bulletDamage;
     this.targetDirection = targetDirection;
 
     // Set last position to the current position at start of flight
@@ -39,10 +36,15 @@ public class BulletProjectile : MonoBehaviour
       // Hit something - move to place hit
       transform.position = raycastHit.point;
 
-      // If it was a unit, should damage it
+      // Check if the bullet hit a unit
       if (raycastHit.transform.TryGetComponent<Unit>(out Unit unit))
       {
-        Debug.Log("Hit unit");
+        // Check with level unit manager if this was friendly fire or not
+        if (!LevelUnitManager.Instance.WasFriendlyFire(team, unit.GetTeam()))
+        {
+          // Should damage other unit
+          unit.TakeDamage(bulletDamage);
+        }
       }
 
       // Unparent trail renderer so it fades away and destroys itself when done

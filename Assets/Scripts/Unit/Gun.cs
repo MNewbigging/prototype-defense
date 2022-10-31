@@ -13,13 +13,14 @@ public class Gun : MonoBehaviour
 
   [SerializeField] private int rpm = 60;
   [SerializeField] private int magSize = 10;
+  [SerializeField] private int bulletDamage = 30;
 
   private float rps = 1;
   private float bulletTimer = 0f;
   private int bulletsInMag;
   private bool reloading = false;
 
-
+  private int team;
 
   private void Awake()
   {
@@ -28,6 +29,11 @@ public class Gun : MonoBehaviour
 
     // Starts fully loaded
     bulletsInMag = this.magSize;
+  }
+
+  public void SetTeam(int team)
+  {
+    this.team = team;
   }
 
   public void FireAt(Transform enemyTransform)
@@ -68,15 +74,15 @@ public class Gun : MonoBehaviour
     // Keep bullet target level with origin for now - can introduce spread later
     Vector3 targetPosition = target.position;
     targetPosition.y = shootPointTransform.position.y;
-
-    // Tell the bullet which direction to move in; towards the target
     Vector3 targetDirection = (targetPosition - shootPointTransform.position).normalized;
-    bulletProjectile.SetTargetDirection(targetDirection);
+
+    // Inform bullet which team this gun fires for, its damage and direction
+    bulletProjectile.Setup(team, bulletDamage, targetDirection);
 
     // One less bullet in the mag
     bulletsInMag--;
 
-    // Inform others
+    // Inform others that this gun has fired a shot
     OnShoot?.Invoke(this, EventArgs.Empty);
   }
 
