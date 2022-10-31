@@ -47,7 +47,7 @@ public class Unit : MonoBehaviour
     healthSystem = GetComponent<HealthSystem>();
   }
 
-  private void Update()
+  private void FixedUpdate()
   {
     HandleMovement();
     HandleCombat();
@@ -94,26 +94,18 @@ public class Unit : MonoBehaviour
 
   private void HandleCombat()
   {
-    // If there is no current target enemy,
-    if (targetEnemy == null)
+    // First, see if there are any enemies in range of this unit
+    // TODO - might want to throttle this check since it can become expensive
+    List<Transform> enemiesInRange = GetEnemiesInRange();
+    if (enemiesInRange.Count == 0)
     {
-      // Get all enemies in range 
-      List<Transform> enemiesInRange = GetEnemiesInRange();
-
-      // If no enemies, nothing to do!
-      if (enemiesInRange.Count == 0)
-      {
-        return;
-      }
-
-      // Find one from enemies in range, according to current targeting behaviour
-      targetEnemy = targetingBehaviour.GetTargetEnemy(enemiesInRange);
-
-      // Listen for when that enemy dies
-      targetEnemy.GetComponent<HealthSystem>().OnDie += EnemyHealthSystem_OnDie;
+      return;
     }
 
-    // Face enemy
+    // Pick a target according to current targeting behaviour
+    targetEnemy = targetingBehaviour.GetTargetEnemy(enemiesInRange);
+
+    // Face target
     Vector3 lookDir = (targetEnemy.position - transform.position).normalized;
     transform.forward = Vector3.Lerp(transform.forward, lookDir, rotateSpeed * Time.deltaTime);
 
@@ -152,23 +144,6 @@ public class Unit : MonoBehaviour
     }
 
     return enemies;
-  }
-
-  private void EnemyHealthSystem_OnDie(object sender, Transform enemy)
-  {
-    RemoveTargetEnemy(enemy);
-  }
-
-  private void RemoveTargetEnemy(Transform enemy)
-  {
-    // If that is our target, can remove this enemy as a target
-    if (targetEnemy == enemy)
-    {
-      targetEnemy = null;
-    }
-
-    // Stop listening to that event now
-    enemy.GetComponent<HealthSystem>().OnDie -= EnemyHealthSystem_OnDie;
   }
 
   public int GetTeam()
