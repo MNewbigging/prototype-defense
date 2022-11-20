@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Pathfinding;
+using System;
 
 
 public class UnitController : MonoBehaviour
@@ -53,7 +54,20 @@ public class UnitController : MonoBehaviour
     Seeker seeker = unit.GetComponent<Seeker>();
 
     // Calculate the path to target
-    seeker.StartPath(unit.transform.position, targetPosition);
+    seeker.StartPath(unit.transform.position, targetPosition, (Path path) => OnPathCalculated(path, unit));
+  }
+
+  private void OnPathCalculated(Path path, Unit unit)
+  {
+    // Assumging there are no erroes
+    if (path.error)
+    {
+      Debug.Log("Error calculating path: " + path.errorLog);
+      return;
+    }
+
+    // Tell the unit to start moving
+    unit.StartMoving();
   }
 }
 

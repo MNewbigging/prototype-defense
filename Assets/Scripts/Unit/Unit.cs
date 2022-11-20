@@ -114,4 +114,9 @@ public class Unit : MonoBehaviour
   }
 
   public void TakeDamage(int damageAmount) => healthSystem.TakeDamage(damageAmount);
+
+  public void StartMoving()
+  {
+    OnStartMoving?.Invoke(this, EventArgs.Empty);
+  }
 }
