@@ -30,4 +30,17 @@ public class LevelUnitManager : MonoBehaviour
   {
     return first.GetTeam() != second.GetTeam();
   }
+
+  public bool IsEnemyToUnits(List<Unit> units, Unit potentialEnemy)
+  {
+    foreach (Unit unit in units)
+    {
+      if (UnitsAreEnemies(unit, potentialEnemy))
+      {
+        return true;
+      }
+    }
+
+    return false;
+  }
 }

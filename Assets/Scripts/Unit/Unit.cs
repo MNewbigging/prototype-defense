@@ -15,12 +15,6 @@ public class Unit : MonoBehaviour
   [SerializeField] private int team = 1;
   private HealthSystem healthSystem;
 
-  // Movement
-  private Vector3 targetMovePosition;
-  private float moveSpeed = 4f;
-  private bool moving = false;
-  private float rotateSpeed = 10f;
-
   // Enemy
   private TargetingBehaviour targetingBehaviour;
   private Transform targetEnemy;
@@ -31,9 +25,6 @@ public class Unit : MonoBehaviour
 
   private void Awake()
   {
-    // Default target move position is position this unit starts in
-    targetMovePosition = transform.position;
-
     // Turn off selected visual by default
     unitSelectedVisual.enabled = false;
 
@@ -49,47 +40,7 @@ public class Unit : MonoBehaviour
 
   private void FixedUpdate()
   {
-    HandleMovement();
     HandleCombat();
-  }
-
-  private void HandleMovement()
-  {
-    // Check if we should be moving
-    if (moving)
-    {
-      // Has unit reached target yet?
-      float stoppingDistance = 0.05f;
-      if (Vector3.Distance(transform.position, targetMovePosition) > stoppingDistance)
-      {
-        // Not yet; continue moving
-        MoveToTarget();
-      }
-      else
-      {
-        // Within acceptable stopping distance of target; stop moving now
-        ReachedTarget();
-      }
-    }
-  }
-
-  private void MoveToTarget()
-  {
-    // Move towards target
-    Vector3 moveDirection = (targetMovePosition - transform.position).normalized;
-    transform.position += moveDirection * this.moveSpeed * Time.deltaTime;
-
-    // Rotate to face target smoothly - so long as there isn't an enemy to face
-    if (targetEnemy == null)
-    {
-      transform.forward = Vector3.Lerp(transform.forward, moveDirection, rotateSpeed * Time.deltaTime);
-    }
-  }
-
-  private void ReachedTarget()
-  {
-    moving = false;
-    OnStopMoving?.Invoke(this, EventArgs.Empty);
   }
 
   private void HandleCombat()
@@ -164,14 +115,6 @@ public class Unit : MonoBehaviour
   public void OnDeselect()
   {
     unitSelectedVisual.enabled = false;
-  }
-
-  public void MoveTo(Vector3 moveTarget)
-  {
-    // Start moving
-    targetMovePosition = moveTarget;
-    moving = true;
-    OnStartMoving?.Invoke(this, EventArgs.Empty);
   }
 
   public void TakeDamage(int damageAmount) => healthSystem.TakeDamage(damageAmount);
