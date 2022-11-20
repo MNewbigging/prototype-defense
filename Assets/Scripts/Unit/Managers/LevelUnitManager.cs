@@ -11,7 +11,9 @@ public class LevelUnitManager : MonoBehaviour {
   [SerializeField] private Transform enemySpawnPoint;
   [SerializeField] private GameObject enemyUnitPrefab;
   private float nextSpawnTimer = 1f;
+  private float nextSpawnDelay = 10f;
   private int remainingEnemies = 1;
+
 
   private void Awake() {
     // Singleton setup
@@ -33,23 +35,20 @@ public class LevelUnitManager : MonoBehaviour {
       return;
     }
 
-
-
     nextSpawnTimer -= Time.deltaTime;
 
     if (nextSpawnTimer <= 0f) {
-      SpawnEnemy();
+      // Spawn the enemy
+      GameObject gameObject = Instantiate(enemyUnitPrefab, enemySpawnPoint.position, Quaternion.identity);
+
+      // Set to opposing team
+      Unit unit = gameObject.GetComponent<Unit>();
+      unit.SetTeam(2);
+
+      // Update bookkeeping
+      remainingEnemies--;
+      nextSpawnTimer = nextSpawnDelay;
     }
-  }
-
-  private void SpawnEnemy() {
-    // Create a new unit
-    Instantiate(enemyUnitPrefab, enemySpawnPoint.position, Quaternion.identity);
-
-    // Send it into the scene
-
-    // One less enemy remains to be spawned
-    remainingEnemies--;
   }
 
   public bool WasFriendlyFire(int fromTeam, int toTeam) {

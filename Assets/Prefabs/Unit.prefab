@@ -19,6 +19,8 @@ GameObject:
   - component: {fileID: -3394670821676433785}
   - component: {fileID: 1783851089}
   - component: {fileID: 1783851090}
+  - component: {fileID: 171329001922707816}
+  - component: {fileID: 5629122124660266341}
   m_Layer: 6
   m_Name: Unit
   m_TagString: Untagged
@@ -225,6 +227,33 @@ MonoBehaviour:
   tagPenalties: 0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
   graphMask:
     value: -1
+--- !u!114 &171329001922707816
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4102000681070599322}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eeb524db57b2bbd4c93684441b2b59b7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  defaultState: 1
+--- !u!114 &5629122124660266341
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4102000681070599322}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b2ebc3cbf7133841ab5ad0434317d08, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  detectionRange: 5
+  aimRotateSpeed: 10
 --- !u!1 &4811321046618958124
 GameObject:
   m_ObjectHideFlags: 0

@@ -4,8 +4,7 @@ using UnityEngine;
 using System;
 using Pathfinding;
 
-public class Unit : MonoBehaviour
-{
+public class Unit : MonoBehaviour {
   // Unit action events
   public event EventHandler OnStartMoving;
   public event EventHandler OnStopMoving;
@@ -28,8 +27,7 @@ public class Unit : MonoBehaviour
   // Weapon
   private Gun gun;
 
-  private void Awake()
-  {
+  private void Awake() {
     // Turn off selected visual by default
     unitSelectedVisual.enabled = false;
 
@@ -45,32 +43,26 @@ public class Unit : MonoBehaviour
     agent = GetComponent<RichAI>();
   }
 
-  private void FixedUpdate()
-  {
+  private void FixedUpdate() {
     HandleMovement();
-    HandleCombat();
+    //HandleCombat();
   }
 
-  private void HandleMovement()
-  {
-    if (!moving)
-    {
+  private void HandleMovement() {
+    if (!moving) {
       return;
     }
 
-    if (agent.reachedEndOfPath && !agent.pathPending)
-    {
+    if (agent.reachedEndOfPath && !agent.pathPending) {
       StopMoving();
     }
   }
 
-  private void HandleCombat()
-  {
+  private void HandleCombat() {
     // First, see if there are any enemies in range of this unit
     // TODO - might want to throttle this check since it can become expensive
     List<Transform> enemiesInRange = GetEnemiesInRange();
-    if (enemiesInRange.Count == 0)
-    {
+    if (enemiesInRange.Count == 0) {
       return;
     }
 
@@ -86,30 +78,25 @@ public class Unit : MonoBehaviour
     gun.FireAt(targetEnemy.transform);
   }
 
-  private List<Transform> GetEnemiesInRange()
-  {
+  private List<Transform> GetEnemiesInRange() {
     // Spherecast to detect any enemies in range
     RaycastHit[] hits = Physics.SphereCastAll(transform.position, detectionRange, transform.forward, detectionRange);
 
     List<Transform> enemies = new List<Transform>();
 
-    foreach (RaycastHit hit in hits)
-    {
+    foreach (RaycastHit hit in hits) {
       // Ensure this was a unit
-      if (!hit.transform.TryGetComponent<Unit>(out Unit hitUnit))
-      {
+      if (!hit.transform.TryGetComponent<Unit>(out Unit hitUnit)) {
         continue;
       }
 
       // Ensure this was a different unit than the one doing the detecting
-      if (this == hitUnit)
-      {
+      if (this == hitUnit) {
         continue;
       }
 
       // Also ensure this unit is an enemy
-      if (LevelUnitManager.Instance.UnitsAreEnemies(this, hitUnit))
-      {
+      if (LevelUnitManager.Instance.UnitsAreEnemies(this, hitUnit)) {
         // Can add it to list of potential enemies
         enemies.Add(hitUnit.transform);
       }
@@ -118,38 +105,31 @@ public class Unit : MonoBehaviour
     return enemies;
   }
 
-  public int GetTeam()
-  {
+  public int GetTeam() {
     return team;
   }
 
-  public void SetTeam(int team)
-  {
+  public void SetTeam(int team) {
     this.team = team;
   }
 
-  public void OnSelect()
-  {
+  public void OnSelect() {
     unitSelectedVisual.enabled = true;
   }
 
-  public void OnDeselect()
-  {
+  public void OnDeselect() {
     unitSelectedVisual.enabled = false;
   }
 
   public void TakeDamage(int damageAmount) => healthSystem.TakeDamage(damageAmount);
 
-  public void StartMoving()
-  {
+  public void StartMoving() {
     moving = true;
     OnStartMoving?.Invoke(this, EventArgs.Empty);
   }
 
-  public void StopMoving()
-  {
-    if (!moving)
-    {
+  public void StopMoving() {
+    if (!moving) {
       return;
     }
 
