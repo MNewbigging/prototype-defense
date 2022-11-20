@@ -19,6 +19,7 @@ public class Unit : MonoBehaviour
   private TargetingBehaviour targetingBehaviour;
   private Transform targetEnemy;
   private float detectionRange = 5f;
+  private float rotateSpeed = 10f;
 
   // Weapon
   private Gun gun;
@@ -100,11 +101,6 @@ public class Unit : MonoBehaviour
   public int GetTeam()
   {
     return team;
-  }
-
-  public void SetTeam(int team)
-  {
-    this.team = team;
   }
 
   public void OnSelect()
