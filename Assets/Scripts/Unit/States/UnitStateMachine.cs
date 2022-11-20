@@ -16,6 +16,12 @@ public abstract class UnitStateBase : MonoBehaviour {
   public virtual void OnExit() { }
 
   public event EventHandler<UnitStateName> ChangeToState;
+
+  protected Unit unit;
+
+  private void Awake() {
+    unit = GetComponent<Unit>();
+  }
 }
 
 public class UnitStateMachine : MonoBehaviour {

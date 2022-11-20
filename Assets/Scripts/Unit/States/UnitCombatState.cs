@@ -5,8 +5,13 @@ using UnityEngine;
 public class UnitCombatState : UnitStateBase {
   [SerializeField] private float detectionRange = 5f;
   [SerializeField] private float aimRotateSpeed = 10f;
-
-  private Unit unit;
+  [SerializeField] private LayerMask unitsLayerMask;
+  [SerializeField] private LayerMask obstaclesLayerMask;
+  [SerializeField] private float viewRadius = 4f;
+  [SerializeField][Range(0, 360)] private float viewAngle = 45f;
+  [SerializeField] private Transform eyeHeight;
+  private Vector3 searchTarget;
+  private Vector3 castFrom = new Vector3();
 
   private TargetingBehaviour targetingBehaviour;
   private Transform targetEnemy;
@@ -14,7 +19,6 @@ public class UnitCombatState : UnitStateBase {
   private Gun gun;
 
   private void Awake() {
-    unit = GetComponent<Unit>();
     targetingBehaviour = GetComponent<TargetClosestEnemy>();
     gun = GetComponent<Gun>();
   }
@@ -22,7 +26,7 @@ public class UnitCombatState : UnitStateBase {
   private void HandleCombat() {
     // First, see if there are any enemies in range of this unit
     // TODO - might want to throttle this check since it can become expensive
-    List<Transform> enemiesInRange = GetEnemiesInRange();
+    List<Transform> enemiesInRange = FindEnemiesInView();
     if (enemiesInRange.Count == 0) {
       return;
     }
@@ -64,6 +68,51 @@ public class UnitCombatState : UnitStateBase {
     }
 
     return enemies;
+  }
+
+  private List<Transform> FindEnemiesInView() {
+    // Get all targets in viewing range
+    Collider[] targetsInRange = Physics.OverlapSphere(transform.position, viewRadius, unitsLayerMask);
+
+    // Filter out by enemy units
+    List<Unit> enemyUnitsInRange = GetEnemyUnitsFromColliders(targetsInRange);
+    if (enemyUnitsInRange.Count == 0) {
+      return null;
+    }
+
+    List<Transform> enemyUnitsInView = new List<Transform>();
+    foreach (Unit targetUnit in enemyUnitsInRange) {
+      // Get direction to target in range, test if within viewing angle
+      Vector3 dirToTarget = (targetUnit.transform.position - transform.position).normalized;
+      if (Vector3.Angle(transform.forward, dirToTarget) < viewAngle / 2) {
+        float distance = Vector3.Distance(transform.position, targetUnit.transform.position);
+        // Ensure it can be 'seen' by raycasting from eye-height
+        castFrom = transform.position;
+        castFrom.y = eyeHeight.position.y;
+        // As long as no obstacle was hit on the way to the target
+        if (!Physics.Raycast(castFrom, dirToTarget, distance, obstaclesLayerMask)) {
+          // This is an enemy in view
+          enemyUnitsInView.Add(targetUnit.transform);
+        }
+      }
+    }
+
+    return enemyUnitsInView;
+  }
+
+  private List<Unit> GetEnemyUnitsFromColliders(Collider[] colliders) {
+    List<Unit> units = new List<Unit>();
+
+    foreach (Collider collider in colliders) {
+      if (collider.gameObject.TryGetComponent<Unit>(out Unit colliderUnit)) {
+        // See if this was an enemy unit
+        if (LevelUnitManager.Instance.UnitsAreEnemies(unit, colliderUnit)) {
+          units.Add(colliderUnit);
+        }
+      }
+    }
+
+    return units;
   }
 
   public override UnitStateName GetName() {
