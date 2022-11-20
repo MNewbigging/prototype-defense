@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
-
+using Pathfinding;
 
 public class Unit : MonoBehaviour
 {
@@ -21,6 +21,10 @@ public class Unit : MonoBehaviour
   private float detectionRange = 5f;
   private float rotateSpeed = 10f;
 
+  // Movement
+  private RichAI agent;
+  private bool moving = false;
+
   // Weapon
   private Gun gun;
 
@@ -37,11 +41,27 @@ public class Unit : MonoBehaviour
 
     // Get attached health system
     healthSystem = GetComponent<HealthSystem>();
+
+    agent = GetComponent<RichAI>();
   }
 
   private void FixedUpdate()
   {
+    HandleMovement();
     HandleCombat();
+  }
+
+  private void HandleMovement()
+  {
+    if (!moving)
+    {
+      return;
+    }
+
+    if (agent.reachedEndOfPath && !agent.pathPending)
+    {
+      StopMoving();
+    }
   }
 
   private void HandleCombat()
@@ -117,6 +137,18 @@ public class Unit : MonoBehaviour
 
   public void StartMoving()
   {
+    moving = true;
     OnStartMoving?.Invoke(this, EventArgs.Empty);
+  }
+
+  public void StopMoving()
+  {
+    if (!moving)
+    {
+      return;
+    }
+
+    moving = false;
+    OnStopMoving?.Invoke(this, EventArgs.Empty);
   }
 }
