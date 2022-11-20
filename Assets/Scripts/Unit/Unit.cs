@@ -123,6 +123,11 @@ public class Unit : MonoBehaviour
     return team;
   }
 
+  public void SetTeam(int team)
+  {
+    this.team = team;
+  }
+
   public void OnSelect()
   {
     unitSelectedVisual.enabled = true;
